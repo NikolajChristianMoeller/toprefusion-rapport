@@ -1,4 +1,4 @@
-# OBSERVATIONER JEG HAR GJORT MIG
+# Foreløbige observationer
 
 Jeg kommenterer her på iagtagelser og små antagelser jeg har gjort mig foreløbig.
 
