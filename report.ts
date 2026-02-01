@@ -1,26 +1,38 @@
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 
+type Employee = { id: number; name: string };
+type Count = { id: number; total_count: number };
+type Amount = { id: number; total_amount: number };
+type ApprovedPaid = {
+  id: number;
+  approved_amount: number;
+  paid_amount: number;
+};
+
 async function main() {
   const db = await open({
     filename: './reimbursements.db',
     driver: sqlite3.Database,
   });
   const employees = await getEmployees(db);
-  //console.log(employees);
+  console.log(employees);
   const totalCount = await getTotalCountPerEmployee(db);
-  //console.log(totalCount);
+  console.log(totalCount);
   const totalAmount = await getTotalAmountPerEmployee(db);
-  //console.log(totalAmount);
+  console.log(totalAmount);
   const totalApprovedAndPaid = await getTotalApprovedAndPaidPerEmployee(db);
   console.log(totalApprovedAndPaid);
 }
 
-async function getEmployees(db:any) {
-  return await db.all(`SELECT id, name FROM employee`);
+async function getEmployees(db: any) {
+  return await db.all(`
+    SELECT id, name
+    FROM employee
+    `);
 }
 
-async function getTotalCountPerEmployee(db:any) {
+async function getTotalCountPerEmployee(db: any) {
   return await db.all(`
     SELECT employee.id, employee.name,
     COUNT(reimbursement.id) AS total_count
