@@ -6,13 +6,12 @@ async function main() {
     filename: './reimbursements.db',
     driver: sqlite3.Database,
   });
-
-  const employees = await db.all('SELECT id, name FROM employee');
-
-  console.log('Medarbejdere:');
+  const employees = await getEmployees(db);
   console.log(employees);
+}
 
-  await db.close();
+async function getEmployees(db:any) {
+  return await db.all(`SELECT id, name FROM employee`);
 }
 
 main();
