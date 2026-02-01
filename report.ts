@@ -8,8 +8,10 @@ async function main() {
   });
   const employees = await getEmployees(db);
   console.log(employees);
-  const amount = await getTotalCountPerEmployee(db);
-  console.log(amount);
+  const totalCount = await getTotalCountPerEmployee(db);
+  console.log(totalCount);
+  const totalAmount = await getTotalAmountPerEmployee(db);
+  console.log(totalAmount);
 }
 
 async function getEmployees(db:any) {
@@ -26,6 +28,18 @@ async function getTotalCountPerEmployee(db:any) {
     WHERE reimbursement_status.status_name = 'Godkendt' OR reimbursement_status.status_name = 'Udbetalt'
     GROUP BY employee.id
     `);
+}
+
+async function getTotalAmountPerEmployee(db: any) {
+  return await db.all(`
+    SELECT employee.id, employee.name,
+    SUM(reimbursement.amount) AS total_amount
+    FROM employee
+    JOIN reimbursement ON reimbursement.submitted_by_id = employee.id
+    JOIN reimbursement_status ON reimbursement.status_id = reimbursement_status.id
+    WHERE reimbursement_status.status_name = 'Godkendt' OR reimbursement_status.status_name = 'Udbetalt'
+    GROUP BY employee.id
+  `);
 }
 
 main();
