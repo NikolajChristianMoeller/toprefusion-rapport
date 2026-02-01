@@ -25,46 +25,46 @@ async function main() {
   console.log(totalApprovedAndPaid);
 }
 
-async function getEmployees(db: any) {
-  return await db.all(`
+async function getEmployees(db: any): Promise<Employee[]> {
+  return db.all(`
     SELECT id, name
     FROM employee
-    `);
+  `);
 }
 
-async function getTotalCountPerEmployee(db: any) {
-  return await db.all(`
-    SELECT employee.id, employee.name,
-    COUNT(reimbursement.id) AS total_count
+async function getTotalCountPerEmployee(db: any): Promise<Count[]> {
+  return db.all(`
+    SELECT employee.id,
+           COUNT(reimbursement.id) AS total_count
     FROM employee
     JOIN reimbursement ON reimbursement.submitted_by_id = employee.id
     JOIN reimbursement_status ON reimbursement.status_id = reimbursement_status.id
-    WHERE reimbursement_status.status_name = 'Godkendt' OR reimbursement_status.status_name = 'Udbetalt'
-    GROUP BY employee.id
-    `);
-}
-
-async function getTotalAmountPerEmployee(db: any) {
-  return await db.all(`
-    SELECT employee.id, employee.name,
-    SUM(reimbursement.amount) AS total_amount
-    FROM employee
-    JOIN reimbursement ON reimbursement.submitted_by_id = employee.id
-    JOIN reimbursement_status ON reimbursement.status_id = reimbursement_status.id
-    WHERE reimbursement_status.status_name = 'Godkendt' OR reimbursement_status.status_name = 'Udbetalt'
+    WHERE reimbursement_status.status_name IN ('Godkendt', 'Udbetalt')
     GROUP BY employee.id
   `);
 }
 
-async function getTotalApprovedAndPaidPerEmployee(db: any) {
-  return await db.all(`
-    SELECT 
-      employee.id,
-      employee.name,
-      SUM(CASE WHEN reimbursement_status.status_name = 'Godkendt' 
-               THEN reimbursement.amount ELSE 0 END) AS approved_amount,
-      SUM(CASE WHEN reimbursement_status.status_name = 'Udbetalt' 
-               THEN reimbursement.amount ELSE 0 END) AS paid_amount
+async function getTotalAmountPerEmployee(db: any): Promise<Amount[]> {
+  return db.all(`
+    SELECT employee.id,
+           SUM(reimbursement.amount) AS total_amount
+    FROM employee
+    JOIN reimbursement ON reimbursement.submitted_by_id = employee.id
+    JOIN reimbursement_status ON reimbursement.status_id = reimbursement_status.id
+    WHERE reimbursement_status.status_name IN ('Godkendt', 'Udbetalt')
+    GROUP BY employee.id
+  `);
+}
+
+async function getTotalApprovedAndPaidPerEmployee(
+  db: any,
+): Promise<ApprovedPaid[]> {
+  return db.all(`
+    SELECT employee.id,
+           SUM(CASE WHEN reimbursement_status.status_name = 'Godkendt'
+                    THEN reimbursement.amount ELSE 0 END) AS approved_amount,
+           SUM(CASE WHEN reimbursement_status.status_name = 'Udbetalt'
+                    THEN reimbursement.amount ELSE 0 END) AS paid_amount
     FROM employee
     LEFT JOIN reimbursement ON reimbursement.submitted_by_id = employee.id
     LEFT JOIN reimbursement_status ON reimbursement.status_id = reimbursement_status.id
