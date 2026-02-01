@@ -1,3 +1,11 @@
+## Afvikling
+
+Scriptet kan køres med Node.js v22.22:
+
+```bash
+npx ts-node report.ts
+```
+
 # Foreløbige observationer
 
 Jeg kommenterer her på iagtagelser og små antagelser jeg har gjort mig foreløbig.
@@ -42,3 +50,7 @@ Hvis 'from' og 'to' er angivet, så hentes kun udgifter hvor 'purchase_ts' ligge
 - Jeg går ud fra at hvis 'from' og 'to' er angivet, hentes kun udgifter hvor 'purchase_ts' ligger indenfor perioden. Hvis from eller 'to' er 'None', ignoreres filteret. Så jeg tænker at  purchase_ts er den kolonne, som jeg har valgt at afgrænse på.
 
 purchase_ts er altså den kolonne, vi afgrænser på, ikke at “from” er en kolonne – det er blot input til filteret.
+
+
+# Mangler og videreudvikling
+Jeg har ikke implementeret filtrering eller sortering endnu, hvilket er det sidste, der mangler for at gøre rapporten fuldt funktionel.
