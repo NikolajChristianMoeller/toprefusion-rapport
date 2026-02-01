@@ -15,14 +15,29 @@ async function main() {
     filename: './reimbursements.db',
     driver: sqlite3.Database,
   });
+
   const employees = await getEmployees(db);
-  console.log(employees);
   const totalCount = await getTotalCountPerEmployee(db);
-  console.log(totalCount);
   const totalAmount = await getTotalAmountPerEmployee(db);
-  console.log(totalAmount);
   const totalApprovedAndPaid = await getTotalApprovedAndPaidPerEmployee(db);
-  console.log(totalApprovedAndPaid);
+
+  const report = employees.map((employee) => {
+    const count = totalCount.find((row) => row.id === employee.id);
+    const amount = totalAmount.find((row) => row.id === employee.id);
+    const approvedPaid = totalApprovedAndPaid.find((row) => row.id === employee.id);
+
+    return {
+      Medarbejder: employee.name,
+      'Total (antal)': count?.total_count ?? 0,
+      'Total (DKK)': amount?.total_amount ?? 0,
+      'Godkendt (DKK)': approvedPaid?.approved_amount ?? 0,
+      'Udbetalt (DKK)': approvedPaid?.paid_amount ?? 0,
+    };
+  });
+
+  console.log(JSON.stringify(report, null, 4));
+
+  await db.close();
 }
 
 async function getEmployees(db: any): Promise<Employee[]> {
@@ -71,6 +86,5 @@ async function getTotalApprovedAndPaidPerEmployee(
     GROUP BY employee.id
   `);
 }
-
 
 main();
