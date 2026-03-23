@@ -1,5 +1,3 @@
-Hej
-
 # Baggrund
 
 Forestil dig, at du arbejder for TopRefusion, en virksomhed der hjælper
